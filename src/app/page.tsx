@@ -1,103 +1,204 @@
-import Image from "next/image";
+// src/app/page.tsx
+"use client";
 
-export default function Home() {
+import { useState, useEffect, FormEvent } from "react";
+import RetrieveArticles from "./retrieve_articles";
+import DisplayAssistant from "./display_assistant";
+import { Resizable } from "re-resizable";
+
+type Article = {
+  id: string;
+  title: string;
+  description: string;
+  url: string;
+};
+
+type ArticleCardProps = {
+  article: Article;
+  selected: boolean;
+  onSelect: () => void;
+};
+
+function ArticleCard({ article, selected, onSelect }: ArticleCardProps) {
   return (
-    <div className="font-sans grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="font-mono list-inside list-decimal text-sm/6 text-center sm:text-left">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] font-mono font-semibold px-1 py-0.5 rounded">
-              src/app/page.tsx
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
-
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
-        </div>
-      </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
+    <div
+      className={
+        (selected ? "border-blue-500 bg-blue-50" : "border-gray-200 bg-white") +
+        " block rounded-xl p-4 shadow-sm transition hover:-translate-y-0.5 hover:shadow focus:outline-none focus-visible:ring-2 focus-visible:ring-black"
+      }
+      aria-pressed={selected}
+      aria-label={article.title}
+    >
+      <h3 className="text-base font-semibold text-black md:text-lg">
+        {article.title}
+      </h3>
+      <p className="mt-1 text-sm leading-6 text-gray-600 line-clamp-2">
+        {article.description}
+      </p>
+      <div className="mt-3 flex items-center justify-between">
         <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
+          href={article.url}
           target="_blank"
           rel="noopener noreferrer"
+          className="text-sm font-medium text-blue-600 underline hover:text-blue-800"
         >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
+          Read more
         </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
+        <button
+          type="button"
+          onClick={onSelect}
+          className="ml-4 inline-flex items-center rounded-full bg-black px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-black"
         >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
+          {selected ? "Selected" : "Select"}
+        </button>
+      </div>
     </div>
+  );
+}
+
+const sample: Article[] = [
+      { id: "1", title: "Understanding Semantic Search", description: "A primer on semantic search and how embeddings improve result relevance.", url: "#" },
+      { id: "2", title: "Debouncing and Throttling in Search UIs", description: "How to keep your search bar responsive with debouncing and throttling techniques.", url: "#" },
+      { id: "3", title: "Retrieval-Augmented Generation Patterns", description: "Exploring RAG patterns including chunking, caching, and evaluation best practices.", url: "#" },
+];
+
+export default function Page() {
+  const [query, setQuery] = useState("");
+  const [articles, setArticles] = useState<Article[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [openDialogue, setOpenDialogue] = useState(false);
+  const [assistantWindowSize, setAssistantWindowSize] = useState({ width: 384, height: 400});
+  // Multi-select map: articleId -> true if selected
+  const [selectedMap, setSelectedMap] = useState<Record<string, boolean>>({});
+  const [width, setWidth] = useState(0);
+
+  async function onSearch(e: FormEvent<HTMLFormElement>): Promise<void> {
+    e.preventDefault();
+    setLoading(true);
+    setArticles(RetrieveArticles(query));
+    await new Promise((r) => setTimeout(r, 300));
+    setLoading(false);
+  }
+
+  function toggleSelect(id: string) {
+    setSelectedMap((prev) => {
+      const next = { ...prev };
+      if (next[id]) delete next[id];
+      else next[id] = true;
+      return next;
+    });
+  }
+
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const w = parseInt(params.get("w") || "384", 10);
+    const h = parseInt(params.get("h") || "400", 10);
+    setAssistantWindowSize({ width: w, height: h });
+  }, []);
+
+  function retrieveTextsFromSelectedArticles() : string[] {
+    return articles.filter(a => selectedMap[a.id]).map(a => a.title + ": " + a.description);
+  }  
+  return (
+    <main className="flex min-h-screen flex-col items-center justify-start bg-white px-4 py-10">
+      <h1 className="mb-6 text-4xl font-bold text-black">Keyword Explorer</h1>
+
+      <form onSubmit={onSearch} className="w-full max-w-2xl" role="search" aria-label="Site search">
+        <div className="group flex items-center gap-3 rounded-full border border-gray-300 px-4 py-3 shadow-sm hover:shadow focus-within:shadow md:px-5">
+          <input
+            name="q"
+            type="text"
+            placeholder="Search..."
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            className="flex-1 bg-transparent text-[16px] text-black outline-none placeholder:text-gray-500"
+            autoFocus
+            aria-label="Search"
+          />
+          <button
+            type="submit"
+            className="inline-flex h-9 items-center rounded-full px-4 text-sm font-medium text-white disabled:opacity-60"
+            style={{ background: "black" }}
+            disabled={loading}
+          >
+            {loading ? "Searching…" : "Search"}
+          </button>
+        </div>
+      </form>
+
+      <section aria-label="Search results" className="mt-6 w-full max-w-2xl">
+        <div className="max-h-[60vh] overflow-y-auto rounded-2xl border border-gray-200 bg-gray-50/60 p-3 md:p-4">
+          {loading && (
+            <div className="space-y-3">
+              {[...Array(3)].map((_, i) => (
+                <div key={i} className="h-[84px] animate-pulse rounded-xl bg-gray-200" />
+              ))}
+            </div>
+          )}
+
+          {!loading && articles.length > 0 && (
+            <ul className="space-y-3">
+              {articles.map((a) => (
+                <li key={a.id}>
+                  <ArticleCard
+                    article={a}
+                    selected={!!selectedMap[a.id]}
+                    onSelect={() => toggleSelect(a.id)}
+                  />
+                </li>
+              ))}
+            </ul>
+          )}
+
+          {!loading && articles.length === 0 && (
+            <p className="p-4 text-sm text-gray-600">No results found. Try a different keyword.</p>
+          )}
+        </div>
+      </section>
+      <button
+        type = "button"
+        className="fixed bottom-4 right-4 z-50 rounded-full shadow-lg"
+        aria-label="Floating action button"
+        onClick={() => setOpenDialogue(!openDialogue)}
+      >
+        <img
+          src="/chatbot_icon.png"
+          alt="Action"
+          className="h-14 w-14 rounded-full object-cover" />
+      </button>
+
+      {openDialogue && (
+          <Resizable
+            defaultSize={{ width: assistantWindowSize.width, height: assistantWindowSize.height }}
+            minWidth={300}
+            maxWidth={800}
+            enable={{ left: true, top: true }}   // resize only from the left edge
+            onResizeStop={(e, direction, ref, d) => {
+              const updatedSize = ({
+                width: assistantWindowSize.width + d.width,
+                height: assistantWindowSize.height + d.height,
+              });
+              setAssistantWindowSize(updatedSize);
+
+              const params = new URLSearchParams(window.location.search);
+              params.set("w", String(updatedSize.width));
+              params.set("h", String(updatedSize.height));
+              window.history.replaceState(null, "", "?" + params.toString());
+            }}
+            style={{
+                position: "fixed",
+                bottom: "5rem", // 20 * 0.25rem
+                right: "1rem",  // 4 * 0.25rem
+                zIndex: 50,
+                background: "white",
+                border: "1px solid #d1d5db",
+                borderRadius: "0.5rem",
+                boxShadow: "0 4px 6px rgba(0,0,0,0.1)",
+            }}>
+            <DisplayAssistant texts={retrieveTextsFromSelectedArticles()} />
+          </Resizable>
+      )}
+    </main>
+    //create git repo and push, then implement URL storage for size of assistant screen.
   );
 }
