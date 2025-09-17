@@ -39,6 +39,7 @@ function fetchDialogueHistory(): Dialogue[] {
 }
 
 async function fetchGPTResponse(userQuery: string, dialogue: Dialogue): Promise<string> {
+    //TO-DO: change the title with the summary of the first user message.
     console.log("Fetching GPT response for query:", userQuery);
     if (userQuery.trim() === "") {
         return "Feel free to ask me anything!";
@@ -96,7 +97,6 @@ async function fetchRAGAssistantResponse(texts: string[], userQuery: string): Pr
         console.error("Error fetching assistant response:", error);
         return "Sorry, I couldn't process your request at the moment.";
     }
-    //TO-DO: fetch response from Flask Assistant API.
 }
 
 export default function DisplayAssistant(props: { texts: string[] }) {
